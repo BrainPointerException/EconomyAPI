@@ -30,17 +30,21 @@ public class DataSource {
             Files.createFile(file);
             try (BufferedWriter out = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
                 plugin.getLogger().info("Writing default hikari.properties");
-                out.write("dataSourceClassName=org.mariadb.jdbc.MariaDbDataSource");
-                out.write(System.lineSeparator());
-                out.write("dataSource.user=test");
-                out.write(System.lineSeparator());
-                out.write("dataSource.password=test");
-                out.write(System.lineSeparator());
-                out.write("dataSource.databaseName=mydb");
-                out.write(System.lineSeparator());
-                out.write("dataSource.portNumber=3306");
-                out.write(System.lineSeparator());
-                out.write("dataSource.serverName=localhost");
+                out.write("dataSourceClassName=org.mariadb.jdbc.MariaDbDataSource" + System.lineSeparator());
+                out.write("dataSource.user=test" + System.lineSeparator());
+                out.write("dataSource.password=test" + System.lineSeparator());
+                out.write("dataSource.databaseName=mydb" + System.lineSeparator());
+                out.write("dataSource.portNumber=3306" + System.lineSeparator());
+                out.write("dataSource.serverName=localhost" + System.lineSeparator());
+                out.write("dataSource.cachePrepStmts=true" + System.lineSeparator());
+                out.write("dataSource.prepStmtCacheSize=250" + System.lineSeparator());
+                out.write("dataSource.useServerPrepStmts=true" + System.lineSeparator());
+                out.write("dataSource.useLocalSessionState=true" + System.lineSeparator());
+                out.write("dataSource.rewriteBatchedStatements=true" + System.lineSeparator());
+                out.write("dataSource.cacheResultSetMetadata=true" + System.lineSeparator());
+                out.write("dataSource.cacheServerConfiguration=true" + System.lineSeparator());
+                out.write("dataSource.elideSetAutoCommits=true" + System.lineSeparator());
+                out.write("dataSource.maintainTimeStats=false" + System.lineSeparator());
             }
             plugin.getLogger().info("Default hikari.properties file created");
         }
