@@ -1,0 +1,4 @@
+name: ReventuxCore
+main: de.brainexception.reventuxcore.ReventuxCorePlugin
+version: "${project.version}"
+author: BrainPointerException
