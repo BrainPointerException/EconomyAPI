@@ -35,7 +35,7 @@ public class UserManager {
                 .thenCompose(this::saveUser);
     }
 
-    public CompletableFuture<UserData> saveUserData(UUID uuid) {
+    public CompletableFuture<User> saveUserData(UUID uuid) {
         return null;
     }
 

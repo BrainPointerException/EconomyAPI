@@ -15,10 +15,17 @@ public class ReventuxCorePlugin extends JavaPlugin {
         getLogger().info("onEnabled called.");
         try {
             ds = new DataSource(this);
+            getLogger().info("Successfully connected to the database.");
         } catch (IOException e) {
             getLogger().warning("Error while creating JDBC connection!");
             getLogger().warning(e.getMessage());
             e.printStackTrace();
+        }
+        try {
+            ds.createUserTable();
+        } catch (SQLException throwables) {
+            getLogger().warning("Error while creating users table!");
+            throwables.printStackTrace();
         }
     }
 

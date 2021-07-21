@@ -6,7 +6,6 @@ public class User {
 
     private UUID uuid;
     private String username;
-    private UserData data;
 
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -22,9 +21,5 @@ public class User {
 
     public UUID getUuid() {
         return uuid;
-    }
-
-    public UserData getUserData() {
-        return data;
     }
 }
