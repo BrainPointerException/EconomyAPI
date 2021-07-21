@@ -4,6 +4,7 @@ import de.brainexception.reventuxcore.database.DataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class ReventuxCorePlugin extends JavaPlugin {
 
@@ -23,6 +24,11 @@ public class ReventuxCorePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("onDisable called.");
+        try {
+            ds.getConnection().close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
 }

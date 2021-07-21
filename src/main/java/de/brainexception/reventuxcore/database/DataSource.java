@@ -11,13 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DataSource {
 
-    private ReventuxCorePlugin plugin;
+    private final ReventuxCorePlugin plugin;
 
-    private HikariConfig config;
-    private HikariDataSource ds;
+    private final HikariConfig config;
+    private final HikariDataSource ds;
 
     @Inject
     public DataSource(ReventuxCorePlugin plugin) throws IOException {
@@ -30,26 +32,21 @@ public class DataSource {
             Files.createFile(file);
             try (BufferedWriter out = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
                 plugin.getLogger().info("Writing default hikari.properties");
-                out.write("dataSourceClassName=org.mariadb.jdbc.MariaDbDataSource" + System.lineSeparator());
-                out.write("dataSource.user=test" + System.lineSeparator());
+                out.write("dataSourceClassName=org.mariadb.jdbc.MariaDbDataSource"  + System.lineSeparator());
+                out.write("dataSource.user=test"  + System.lineSeparator());
                 out.write("dataSource.password=test" + System.lineSeparator());
                 out.write("dataSource.databaseName=mydb" + System.lineSeparator());
                 out.write("dataSource.portNumber=3306" + System.lineSeparator());
                 out.write("dataSource.serverName=localhost" + System.lineSeparator());
-                out.write("dataSource.cachePrepStmts=true" + System.lineSeparator());
-                out.write("dataSource.prepStmtCacheSize=250" + System.lineSeparator());
-                out.write("dataSource.useServerPrepStmts=true" + System.lineSeparator());
-                out.write("dataSource.useLocalSessionState=true" + System.lineSeparator());
-                out.write("dataSource.rewriteBatchedStatements=true" + System.lineSeparator());
-                out.write("dataSource.cacheResultSetMetadata=true" + System.lineSeparator());
-                out.write("dataSource.cacheServerConfiguration=true" + System.lineSeparator());
-                out.write("dataSource.elideSetAutoCommits=true" + System.lineSeparator());
-                out.write("dataSource.maintainTimeStats=false" + System.lineSeparator());
             }
             plugin.getLogger().info("Default hikari.properties file created");
         }
+        config = new HikariConfig(file.toString());
+        ds = new HikariDataSource(config);
     }
 
-
+    public Connection getConnection() throws SQLException {
+        return ds.getConnection();
+    }
 
 }
