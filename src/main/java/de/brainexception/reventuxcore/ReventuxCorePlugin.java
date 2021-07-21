@@ -16,6 +16,7 @@ public class ReventuxCorePlugin extends JavaPlugin {
         try {
             ds = new DataSource(this);
         } catch (IOException e) {
+            getLogger().warning("Error while creating JDBC connection!");
             getLogger().warning(e.getMessage());
             e.printStackTrace();
         }
