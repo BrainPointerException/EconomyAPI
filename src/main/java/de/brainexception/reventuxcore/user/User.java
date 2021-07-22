@@ -29,4 +29,20 @@ public class User {
     public UUID getUuid() {
         return uuid;
     }
+
+    public double getCoins() {
+        return coins;
+    }
+
+    public void setCoins(double coins) {
+        this.coins = coins;
+    }
+
+    public void addCoins(double coins) {
+        this.coins =+ coins;
+    }
+
+    public void removeCoins (double coins) {
+        this.coins -= coins;
+    }
 }

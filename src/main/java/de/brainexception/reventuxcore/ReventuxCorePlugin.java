@@ -7,6 +7,8 @@ import de.brainexception.reventuxcore.listener.PlayerListener;
 import de.brainexception.reventuxcore.module.BinderModule;
 import de.brainexception.reventuxcore.user.UserManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -43,6 +45,14 @@ public class ReventuxCorePlugin extends JavaPlugin {
         }
 
         userManager = new UserManager(this);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                getLogger().info(userManager.userCache.stats().toString());
+                getLogger().info(String.valueOf(userManager.userCache.estimatedSize()));
+            }
+        }.runTaskTimerAsynchronously(this, 0L, 20L);
 
     }
 

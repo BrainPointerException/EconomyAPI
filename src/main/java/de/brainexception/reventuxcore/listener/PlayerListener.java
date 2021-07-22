@@ -5,6 +5,8 @@ import de.brainexception.reventuxcore.ReventuxCorePlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
@@ -16,10 +18,22 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(AsyncPlayerPreLoginEvent e) {
+    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent e) {
         if (!plugin.getUserManager().findUsernameSync(e.getUniqueId()).isPresent())  {
-            plugin.getUserManager().createUserSync(e.getUniqueId(), e.getName(), 0);
+            plugin.getUserManager().createUser(e.getUniqueId(), e.getName(), 0);
         }
+    }
+
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent e) {
+        plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName())
+                .addCoins(10);
+    }
+
+    @EventHandler
+    public void onQuit (PlayerQuitEvent e) {
+        plugin.getUserManager().saveUser(
+                plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName()));
     }
 
 }
