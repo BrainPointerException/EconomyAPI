@@ -39,7 +39,7 @@ public class User {
     }
 
     public void addCoins(double coins) {
-        this.coins =+ coins;
+        this.coins += coins;
     }
 
     public void removeCoins (double coins) {

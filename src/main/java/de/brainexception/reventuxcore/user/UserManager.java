@@ -197,4 +197,16 @@ public class UserManager {
         userCache.invalidate(uuid);
     }
 
+    public void clearCache() {
+        userCache.asMap().forEach((uuid, optionalCompletableFuture) -> {
+            try {
+                optionalCompletableFuture.get()
+                        .ifPresent(user -> saveUser(user).thenAccept(user1 -> unloadUser(user1.get().getUuid())));
+            } catch (InterruptedException | ExecutionException e) {
+                plugin.getLogger().warning("Error while saving user " + uuid);
+                e.printStackTrace();
+            }
+        });
+    }
+
 }

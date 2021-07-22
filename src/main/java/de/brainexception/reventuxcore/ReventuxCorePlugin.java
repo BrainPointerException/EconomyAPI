@@ -8,7 +8,6 @@ import de.brainexception.reventuxcore.module.BinderModule;
 import de.brainexception.reventuxcore.user.UserManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -59,6 +58,7 @@ public class ReventuxCorePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("onDisable called.");
+        userManager.clearCache();
         try {
             dataSource.getConnection().close();
         } catch (SQLException throwables) {

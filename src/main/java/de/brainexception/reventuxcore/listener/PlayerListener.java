@@ -28,12 +28,14 @@ public class PlayerListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent e) {
         plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName())
                 .addCoins(10);
+
     }
 
     @EventHandler
     public void onQuit (PlayerQuitEvent e) {
         plugin.getUserManager().saveUser(
-                plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName()));
+                plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName()))
+        .thenAccept(user -> plugin.getUserManager().unloadUser(user.get().getUuid()));
     }
 
 }
