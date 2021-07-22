@@ -6,6 +6,7 @@ public class User {
 
     private UUID uuid;
     private String username;
+    private double coins;
 
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -13,6 +14,12 @@ public class User {
 
     public User(String username) {
         this.username = username;
+    }
+
+    public User (UUID uuid, String username, double coins) {
+        this.uuid = uuid;
+        this.username = username;
+        this.coins = coins;
     }
 
     public String getUsername() {

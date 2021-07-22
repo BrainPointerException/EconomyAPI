@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class DataSource {
 
@@ -51,7 +52,7 @@ public class DataSource {
                 "CREATE TABLE IF NOT EXISTS "
                 + "reventuxcore_users"
                 + "("
-                + "id_user SERIAL PRIMARY KEY, uuid BINARY(16) NOT NULL, name VARCHAR(16), coins DOUBLE(6,0), "
+                + "id_user SERIAL PRIMARY KEY, uuid VARCHAR(36) NOT NULL, name VARCHAR(16), coins DOUBLE(6,0), "
                 + " UNIQUE (uuid)"
                 + ") "
                 + "DEFAULT CHARSET = utf8"
