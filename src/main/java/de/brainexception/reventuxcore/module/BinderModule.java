@@ -7,6 +7,9 @@ import de.brainexception.reventuxcore.ReventuxCorePlugin;
 
 public class BinderModule extends AbstractModule {
 
+    /**
+     * Plugin instance
+     */
     private final ReventuxCorePlugin plugin;
 
     public BinderModule(ReventuxCorePlugin plugin) {

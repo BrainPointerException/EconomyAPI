@@ -10,6 +10,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
+    /**
+     * Plugin instance
+     */
     private ReventuxCorePlugin plugin;
 
     @Inject

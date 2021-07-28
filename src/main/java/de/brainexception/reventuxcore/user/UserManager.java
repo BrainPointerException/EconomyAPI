@@ -16,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 public class UserManager {
 
+    /**
+     * Plugin instance
+     */
     private final ReventuxCorePlugin plugin;
     public final LoadingCache<UUID, CompletableFuture<Optional<User>>> userCache;
 
@@ -28,6 +31,12 @@ public class UserManager {
                 .build(this::loadUser);
     }
 
+    /**
+     * Loads a user async from the database
+     *
+     * @param uuid The {@link UUID} of the user to load
+     * @return A {@link CompletableFuture} which contains a {@link Optional} to return a {@link User} or an empty Optional
+     */
     private CompletableFuture<Optional<User>> loadUser(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -41,6 +50,13 @@ public class UserManager {
         });
     }
 
+    /**
+     * Loads a user from the database
+     *
+     * @param uuid The {@link UUID} of the user to load.
+     * @return An {@link Optional} which contains a {@link User} or an empty Optional
+     * @throws SQLException when a {@link ResultSet} is invalid
+     */
     private Optional<User> loadUserSync(UUID uuid) throws SQLException {
         try (PreparedStatement ps =
                      plugin.getDataSource().getConnection().prepareStatement(
@@ -57,6 +73,13 @@ public class UserManager {
         }
     }
 
+    /**
+     * Updates the user async and loads the user afterwards async
+     *
+     * @param uuid The {@link UUID} of the user to update and load
+     * @param name The {@link String} of the user to update and load
+     * @return A {@link CompletableFuture} which contains a {@link Optional} which is empty or contains a {@link User}
+     */
     public CompletableFuture<Optional<User>> loadAndUpdateUser(UUID uuid, String name) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -70,6 +93,13 @@ public class UserManager {
         });
     }
 
+    /**
+     * Updates the uuid and name given name sync
+     *
+     * @param uuid The {@link UUID} which is getting updated
+     * @param name The {@link String} which is getting updated
+     * @throws SQLException if the uuid is invalid
+     */
     public void updateUserSync(UUID uuid, String name) throws SQLException {
         try (PreparedStatement ps =
                 plugin.getDataSource().getConnection().prepareStatement(

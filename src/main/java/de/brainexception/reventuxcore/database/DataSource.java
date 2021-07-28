@@ -17,8 +17,14 @@ import java.sql.SQLException;
 
 public class DataSource {
 
+    /**
+     * Plugin instance
+     */
     private final ReventuxCorePlugin plugin;
 
+    /**
+     * Connection pool config and datasource
+     */
     private final HikariConfig config;
     private final HikariDataSource ds;
 
