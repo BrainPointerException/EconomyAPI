@@ -5,7 +5,6 @@ import de.brainexception.reventuxcore.ReventuxCorePlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -13,7 +12,7 @@ public class PlayerListener implements Listener {
     /**
      * Plugin instance
      */
-    private ReventuxCorePlugin plugin;
+    private final ReventuxCorePlugin plugin;
 
     @Inject
     public PlayerListener(ReventuxCorePlugin plugin) {
@@ -28,16 +27,9 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onCommand(PlayerCommandPreprocessEvent e) {
-        plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName())
-                .addCoins(10);
-
-    }
-
-    @EventHandler
     public void onQuit (PlayerQuitEvent e) {
         plugin.getUserManager().saveUser(
-                plugin.getUserManager().getUser(e.getPlayer().getUniqueId(), e.getPlayer().getName()))
+                plugin.getUserManager().getUser(e.getPlayer().getUniqueId()))
         .thenAccept(user -> plugin.getUserManager().unloadUser(user.get().getUuid()));
     }
 

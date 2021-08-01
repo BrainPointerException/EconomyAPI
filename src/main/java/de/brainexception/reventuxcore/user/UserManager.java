@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.inject.Inject;
 import de.brainexception.reventuxcore.ReventuxCorePlugin;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,11 +59,10 @@ public class UserManager {
      * @throws SQLException when a {@link ResultSet} is invalid
      */
     private Optional<User> loadUserSync(UUID uuid) throws SQLException {
-        try (PreparedStatement ps =
-                     plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                              "SELECT name, coins FROM reventuxcore_users WHERE uuid = ? LIMIT 1")) {
             ps.setString(1, uuid.toString());
-
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String name = rs.getString(1);
@@ -101,17 +101,23 @@ public class UserManager {
      * @throws SQLException if the uuid is invalid
      */
     public void updateUserSync(UUID uuid, String name) throws SQLException {
-        try (PreparedStatement ps =
-                plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                         "UPDATE reventuxcore_users SET name = ? WHERE uuid = ?")) {
             ps.setString(1, name);
             ps.setString(2, uuid.toString());
         }
     }
 
+    /**
+     * Finds the appropriate uuid with the given username
+     *
+     * @param username The {@link String} which is needed to find the uuid
+     * @return A {@link Optional} which is empty if no uuid could be found or the {@link UUID}
+     */
     public Optional<UUID> findUniqueIdSync(String username) {
-        try (PreparedStatement ps =
-                     plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                              "SELECT uuid FROM reventuxcore_users WHERE name = ? LIMIT 1")) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
@@ -126,8 +132,8 @@ public class UserManager {
     }
 
     public Optional<String> findUsernameSync(UUID uuid) {
-        try (PreparedStatement ps =
-                plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                         "SELECT name FROM reventuxcore_users WHERE uuid = ? LIMIT 1")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
@@ -160,15 +166,15 @@ public class UserManager {
     }
 
     private Optional<User> createUserSync(UUID uuid, String name, double coins) throws SQLException {
-        try (PreparedStatement ps =
-                plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                         "INSERT INTO reventuxcore_users " +
                                 "(uuid, name, coins) VALUES (?, ?, ?)")) {
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setDouble(3, coins);
             ps.executeUpdate();
-            return Optional.of(getUser(uuid, name));
+            return Optional.of(getUser(uuid));
         }
     }
 
@@ -177,8 +183,8 @@ public class UserManager {
     }
 
     public Optional<User> saveUserSync(User user) {
-        try (PreparedStatement ps =
-                plugin.getDataSource().getConnection().prepareStatement(
+        try (Connection connection = plugin.getDataSource().getSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
                         "UPDATE reventuxcore_users SET name = ?, coins = ? WHERE uuid = ?")) {
             ps.setString(1, user.getUsername());
             ps.setDouble(2, user.getCoins());
@@ -196,7 +202,7 @@ public class UserManager {
         return null;
     }
 
-    public User getUser(UUID uuid, String name) {
+    public User getUser(UUID uuid) {
         CompletableFuture<Optional<User>> cacheUser = userCache.getIfPresent(uuid);
         if (cacheUser != null) {
             try {
@@ -211,7 +217,7 @@ public class UserManager {
             }
         }
 
-        CompletableFuture<Optional<User>> loadUser = loadAndUpdateUser(uuid, name);
+        CompletableFuture<Optional<User>> loadUser = loadUser(uuid);
         userCache.put(uuid, loadUser);
 
         try {

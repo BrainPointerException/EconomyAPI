@@ -2,19 +2,20 @@ package de.brainexception.reventuxcore;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import de.brainexception.reventuxcore.database.DataSource;
+import de.brainexception.reventuxcore.database.config.DatabaseConfig;
+import de.brainexception.reventuxcore.database.MariaDBSourceProvider;
 import de.brainexception.reventuxcore.listener.PlayerListener;
 import de.brainexception.reventuxcore.module.BinderModule;
 import de.brainexception.reventuxcore.user.UserManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class ReventuxCorePlugin extends JavaPlugin {
 
-    @Inject private DataSource dataSource;
+    private MariaDBSourceProvider dataSource;
     @Inject private PlayerListener playerListener;
     @Inject private UserManager userManager;
 
@@ -28,45 +29,44 @@ public class ReventuxCorePlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(playerListener, this);
 
+        DatabaseConfig config = new DatabaseConfig();
+
         try {
-            dataSource = new DataSource(this);
-            getLogger().info("Successfully connected to the database.");
+            config.createDefaultConfiguration();
+            Map<String, String> propMap = config.readDefaultConfiguration();
+            DatabaseConfig.DatabaseSettings settings =
+                    new DatabaseConfig.DatabaseSettings(
+                            propMap.get("dataSource.serverName"),
+                            propMap.get("dataSource.portNumber"),
+                            propMap.get("dataSource.databaseName"),
+                            propMap.get("dataSource.user"),
+                            propMap.get("dataSource.password"),
+                            0,
+                            100
+                    );
+            try {
+                dataSource = new MariaDBSourceProvider(settings);
+            } catch (SQLException e) {
+                getLogger().warning("Error while creating a connection!");
+                e.printStackTrace();
+            }
         } catch (IOException e) {
-            getLogger().warning("Error while creating JDBC connection!");
-            getLogger().warning(e.getMessage());
+            getLogger().warning("Could not create the default configuration!");
             e.printStackTrace();
-        }
-        try {
-            dataSource.createUserTable();
-        } catch (SQLException throwables) {
-            getLogger().warning("Error while creating users table!");
-            throwables.printStackTrace();
         }
 
         userManager = new UserManager(this);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                getLogger().info(userManager.userCache.stats().toString());
-                getLogger().info(String.valueOf(userManager.userCache.estimatedSize()));
-            }
-        }.runTaskTimerAsynchronously(this, 0L, 20L);
 
     }
 
     @Override
     public void onDisable() {
         getLogger().info("onDisable called.");
+        dataSource.shutdown();
         userManager.clearCache();
-        try {
-            dataSource.getConnection().close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
     }
 
-    public DataSource getDataSource() {
+    public MariaDBSourceProvider getDataSource() {
         return dataSource;
     }
 
